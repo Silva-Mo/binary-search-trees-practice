@@ -140,38 +140,85 @@ class Tree {
       }
     }
   }
+
+  find(value) {
+    let currentNode = this.root;
+    while (value !== currentNode.data) {
+      if (value > currentNode.data) {
+        if (currentNode.right === null) {
+          return null;
+        }
+        currentNode = currentNode.right;
+      } else if (value < currentNode.data) {
+        if (currentNode.left === null) {
+          return null;
+        }
+        currentNode = currentNode.left;
+      }
+    }
+    return currentNode;
+  }
+
+  levelOrderForEach(callback) {
+    if (typeof callback !== 'function') {
+      throw new Error('You gotta add a callback function');
+    } else {
+      if (this.root === null) {
+        console.log('Tree is empty');
+      } else {
+        const queue = [this.root];
+        let currentNode = queue[queue.length - 1];
+
+        while (currentNode) {
+          callback(queue.shift());
+          if (currentNode.left) {
+            queue.push(currentNode.left);
+          }
+          if (currentNode.right) {
+            queue.push(currentNode.right);
+          }
+          currentNode = queue[0];
+        }
+      }
+    }
+  }
+
+  inOrderForEach(callback, subTree = this.root) {
+    if (subTree === null) {
+      return subTree;
+    }
+    const left = this.inOrderForEach(callback, subTree.left);
+    if (left) {
+      callback(left);
+    }
+    callback(subTree);
+    const right = this.inOrderForEach(callback, subTree.right);
+    if (right) {
+      callback(right);
+    }
+  }
+
+  // preOrderForEach(callback, subTree = this.root) {
+  //   if (subTree === null) {
+  //     return subTree;
+  //   }
+  //   const left = this.inOrderForEach(callback, subTree.left);
+  //   if (left) {
+  //     callback(left);
+  //   }
+  //   callback(subTree);
+  //   const right = this.inOrderForEach(callback, subTree.right);
+  //   if (right) {
+  //     callback(right);
+  //   }
+  // }
 }
 
-const tree = new Tree();
-tree.buildTree([5, 3, 7, 2, 4, 6, 8]);
-tree.deleteItem(5); // Root deletion - likely to break
+let tree = new Tree('Ok');
+tree.buildTree([0, 1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]);
+const array = [];
+tree.inOrderForEach((element) => {
+  array.push(element.data);
+});
+console.log(array);
 tree.prettyPrint(tree.root);
-
-// let tree = new Tree('Ok');
-// tree.buildTree([
-//   1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324, 2, 4, 4.5, 5.5, 66, 6.3, 7.8,
-//   9.9, 10000,
-// ]);
-
-// tree.deleteItem(7.8);
-// tree.deleteItem(8);
-// tree.deleteItem(10000);
-// tree.deleteItem(4.5);
-// tree.deleteItem(1);
-// tree.deleteItem(2);
-// tree.deleteItem(0);
-// tree.deleteItem(6.3);
-// tree.deleteItem(9);
-// tree.deleteItem(324);
-// tree.deleteItem(6345);
-// tree.deleteItem(9.9);
-// tree.deleteItem(23);
-// tree.deleteItem(67);
-// tree.deleteItem(66);
-// tree.deleteItem(5);
-// tree.deleteItem(5.5);
-// tree.deleteItem(3);
-// tree.deleteItem(7);
-// tree.deleteItem(4);
-// tree.deleteItem(0);
-// tree.prettyPrint(tree.root);
