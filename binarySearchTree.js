@@ -184,41 +184,123 @@ class Tree {
   }
 
   inOrderForEach(callback, subTree = this.root) {
-    if (subTree === null) {
-      return subTree;
-    }
-    const left = this.inOrderForEach(callback, subTree.left);
-    if (left) {
-      callback(left);
-    }
-    callback(subTree);
-    const right = this.inOrderForEach(callback, subTree.right);
-    if (right) {
-      callback(right);
+    if (typeof callback !== 'function') {
+      throw new Error('You gotta add a callback function');
+    } else {
+      if (subTree) {
+        const left = this.inOrderForEach(callback, subTree.left);
+        if (left) {
+          callback(left);
+        }
+        callback(subTree);
+        const right = this.inOrderForEach(callback, subTree.right);
+        if (right) {
+          callback(right);
+        }
+      }
     }
   }
 
-  // preOrderForEach(callback, subTree = this.root) {
-  //   if (subTree === null) {
-  //     return subTree;
-  //   }
-  //   const left = this.inOrderForEach(callback, subTree.left);
-  //   if (left) {
-  //     callback(left);
-  //   }
-  //   callback(subTree);
-  //   const right = this.inOrderForEach(callback, subTree.right);
-  //   if (right) {
-  //     callback(right);
-  //   }
-  // }
+  preOrderForEach(callback, subTree = this.root) {
+    if (typeof callback !== 'function') {
+      throw new Error('You gotta add a callback function');
+    } else {
+      if (subTree) {
+        callback(subTree);
+        const left = this.preOrderForEach(callback, subTree.left);
+        if (left) {
+          callback(left);
+        }
+        const right = this.preOrderForEach(callback, subTree.right);
+        if (right) {
+          callback(right);
+        }
+      }
+    }
+  }
+
+  postOrderForEach(callback, subTree = this.root) {
+    if (typeof callback !== 'function') {
+      throw new Error('You gotta add a callback function');
+    } else {
+      if (subTree) {
+        const left = this.postOrderForEach(callback, subTree.left);
+        if (left) {
+          callback(left);
+        }
+        const right = this.postOrderForEach(callback, subTree.right);
+        if (right) {
+          callback(right);
+        }
+        callback(subTree);
+      }
+    }
+  }
+
+  countTillNull(startNode, counter = 0, arrayOfResults = []) {
+    if (startNode && !startNode.right && !startNode.left) {
+      return 0;
+    } else {
+      const oldCounterValue = counter;
+      if (startNode.right) {
+        counter++;
+        arrayOfResults.push(counter);
+        this.countTillNull(startNode.right, counter, arrayOfResults);
+      }
+      counter = oldCounterValue;
+      if (startNode.left) {
+        counter++;
+        arrayOfResults.push(counter);
+        this.countTillNull(startNode.left, counter, arrayOfResults);
+      }
+      const highestValue = Math.max(...arrayOfResults);
+      return highestValue;
+    }
+  }
+
+  height(value) {
+    let currentNode = this.root;
+    while (value !== currentNode.data) {
+      if (value > currentNode.data) {
+        if (currentNode.right === null) {
+          return null;
+        }
+        currentNode = currentNode.right;
+      } else if (value < currentNode.data) {
+        if (currentNode.left === null) {
+          return null;
+        }
+        currentNode = currentNode.left;
+      }
+    }
+
+    let nodeTargeted = currentNode;
+    const counterResult = this.countTillNull(nodeTargeted, null);
+    return counterResult;
+  }
+
+  depth(value) {
+    let counter = 0;
+    let currentNode = this.root;
+    while (value !== currentNode.data) {
+      if (value > currentNode.data) {
+        if (currentNode.right === null) {
+          return null;
+        }
+        currentNode = currentNode.right;
+      } else if (value < currentNode.data) {
+        if (currentNode.left === null) {
+          return null;
+        }
+        currentNode = currentNode.left;
+      }
+      counter++;
+    }
+    return counter;
+  }
 }
 
 let tree = new Tree('Ok');
-tree.buildTree([0, 1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]);
-const array = [];
-tree.inOrderForEach((element) => {
-  array.push(element.data);
-});
-console.log(array);
+tree.buildTree([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]);
 tree.prettyPrint(tree.root);
+console.log(tree.depth(8));
