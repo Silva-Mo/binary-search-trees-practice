@@ -56,7 +56,7 @@ class Tree {
     if (this.root === null) {
       this.root = newVal;
     } else {
-      if (value <= currentNode.data) {
+      if (value < currentNode.data) {
         if (currentNode.left === null) {
           currentNode.left = newVal;
         } else {
@@ -68,6 +68,9 @@ class Tree {
         } else {
           this.insert(value, currentNode.right);
         }
+      } else if (value === currentNode.data) {
+        console.log('Sorry, this value is already there in the tree');
+        return;
       }
     }
   }
@@ -298,9 +301,57 @@ class Tree {
     }
     return counter;
   }
+
+  isBalanced(startNode = this.root) {
+    if (!this.root) {
+      console.log('Empty Tree');
+      return;
+    }
+    if (startNode === null) {
+      return;
+    }
+    let heightOfRight;
+    if (startNode.right) {
+      heightOfRight = this.countTillNull(startNode.right);
+    }
+    let heightOfLeft;
+    if (startNode.left) {
+      heightOfLeft = this.countTillNull(startNode.left);
+    }
+
+    if (
+      Math.abs(heightOfLeft - heightOfRight) > 1 ||
+      (heightOfLeft === undefined && heightOfRight > 0) ||
+      (heightOfRight === undefined && heightOfLeft > 0)
+    ) {
+      return false;
+    } else {
+      let resultOfRight = this.isBalanced(startNode.right);
+      if (resultOfRight === false) {
+        return false;
+      } else {
+        let resultOfLeft = this.isBalanced(startNode.left);
+        if (resultOfLeft === false) {
+          return false;
+        } else {
+          return true;
+        }
+      }
+    }
+  }
+
+  rebalance() {
+    if (this.isBalanced()) {
+      console.log(`already balanced`);
+    } else {
+      const arrayOfSortedNodesValues = [];
+      this.inOrderForEach((element) => {
+        arrayOfSortedNodesValues.push(element.data);
+      });
+
+      this.buildTree(arrayOfSortedNodesValues);
+    }
+  }
 }
 
-let tree = new Tree('Ok');
-tree.buildTree([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]);
-tree.prettyPrint(tree.root);
-console.log(tree.depth(8));
+export { Tree };
